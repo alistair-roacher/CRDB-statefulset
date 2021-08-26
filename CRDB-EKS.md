@@ -127,10 +127,7 @@ The reason that it says "3 more" is that there are 2 endpoints per pod - one lis
 
 You should now be able to connect to the cluster and issue SQL statements:
 ```
-> kubectl get endpoints cockroachdb-public
-NAME                 ENDPOINTS                                                                     AGE
-cockroachdb-public   192.168.101.3:26257,192.168.130.109:26257,192.168.164.110:26257 + 3 more...   47h
-PS C:\Users\alistair\.kube> kubectl exec -it cockroachdb-2 -- /cockroach/cockroach sql --certs-dir=/cockroach/cockroach-certs
+> kubectl exec -it cockroachdb-2 -- /cockroach/cockroach sql --certs-dir=/cockroach/cockroach-certs
 #
 # Welcome to the CockroachDB SQL shell.
 # All statements must be terminated by a semicolon.
