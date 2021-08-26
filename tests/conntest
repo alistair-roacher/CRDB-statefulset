@@ -1,0 +1,7 @@
+#!/bin/bash
+while true
+do
+ date
+ cockroach sql --url postgres://conntest:conntest@localhost:26257?sslmode=require -e 'select now()'
+ sleep 1
+done
