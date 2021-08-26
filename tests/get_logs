@@ -1,0 +1,5 @@
+#!/bin/bash
+for node in 0 1 2
+do
+ kubectl cp -n db cockroachdb-${node}:/cockroach/cockroach-data/conntest/ct.log ct-${node}.log
+done
