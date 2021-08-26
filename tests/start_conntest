@@ -1,0 +1,10 @@
+for node in 0 1 2
+do
+ kubectl cp -n db ./conntest cockroach-${node}:/usr/local/bin/conntest
+ kubectl exec -it -n db cockroach-${node} -- bash <<++++
+mkdir -p /cockroach/cockroach-data/conntest
+cd /cockroach/cockroach-data/conntest
+nohup ./conntest >ct.log 2>&1 &
+exit
+++++
+done
