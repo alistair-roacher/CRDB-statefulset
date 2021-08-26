@@ -1,49 +1,5 @@
 # Instructions for deploying CockroachDB on EKS
 ## Setup Pre-reqs
-* Ensure that the AWS command line utility V2 is installed - see https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html
-* Configure the aws command so that you can connect to and control resources in your AWS account - https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
-* Ensure that eksctl is installed - this will issue the required aws eks commands under the covers so requires no additional configuration - https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html
-* Ensure that your AWS account has the appropriate permissions to create an EKS cluster and EC2 worker nodes
-
-The file install-eks.txt has all the necessary detail to complete the above tasks. You should now be ready to create an EKS cluster with eksctl:
-```
-> eksctl create cluster --name cockroachdb --nodegroup-name standard-workers --node-type m5.xlarge --nodes 3 --nodes-min 1 --nodes-max 4 --node-ami auto
-```
-
-You may find that the eksctl command to create the cluster fails because of a lack of resources in the current region (EKS is quite hungry for certain resources - particularly VPCs and IP addresses) so you may need to request certain resource limits to be raised for your configured region, or you can simply use another region instead. 
-
-Attempting to create a cluster after a previous failed attempt can fail with the following error: 
-```
-2021-08-26 12:45:17 [✖]  creating CloudFormation stack "eksctl-cockroachdb-cluster": AlreadyExistsException: Stack [eksctl-cockroachdb-cluster] already exists
-        status code: 400, request id: 580913e0-0e63-456e-b190-37c9856eed2b
-```
-This happens because the previous failed attempt has not tidied up the CloudFormation stack. You can do this manually with the eksctl delete command:
-```
-> eksctl delete cluster cockroachdb
-2021-08-26 12:46:17 [ℹ]  eksctl version 0.56.0-rc.0
-2021-08-26 12:46:17 [ℹ]  using region eu-west-2
-2021-08-26 12:46:17 [ℹ]  deleting EKS cluster "cockroachdb"
-2021-08-26 12:46:18 [ℹ]  1 task: { delete cluster control plane "cockroachdb" [async] }
-2021-08-26 12:46:18 [ℹ]  will delete stack "eksctl-cockroachdb-cluster"
-2021-08-26 12:46:18 [✔]  all cluster resources were deleted
-```
-Note that the deletion of the CLoudFormation stack can take several minutes to complete.
-
-You should now have an EKS cluster created. You can check this with either aws or eksctl:
-```
-> aws eks list-clusters
-{
-    "clusters": [
-        "cockroachdb",
-    ]
-}
-> eksctl get clusters
-2021-08-26 12:28:00 [ℹ]  eksctl version 0.56.0-rc.0
-2021-08-26 12:28:00 [ℹ]  using region eu-west-2
-NAME                    REGION          EKSCTL CREATED
-cockroachdb             eu-west-2       True
-```
-Note that you might see other clusters created by yourself or other users in your organisation.  
 
 You can't do a lot with your cluster until kubectl is connectly configured. Fortunately there is an aws eks command to add the necessary details to the Kubernetes config file (which by default is $HOME/.kube/config): 
 ```
